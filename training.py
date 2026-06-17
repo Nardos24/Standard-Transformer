@@ -72,14 +72,14 @@ def main():
     # Model configuration
     config = GPTConfig(
         vocab_size = vocab_size,
-        block_size = 256, 
+        block_size = 32, 
         learning_rate = 3e-4,
-        n_embd=256,
+        n_embd=128,
         n_head = 8,
-        n_layer = 6,
+        n_layer = 4,
         dropout= 0.1,
-        max_epochs = 2,
-        max_new_tokens = 50,
+        max_epochs = 5,
+        max_new_tokens = 200,
         temperature = 0.8
     )
 
