@@ -2,26 +2,48 @@ import torch
 from pathlib import Path
 from torch.utils.data import Dataset
 
+
 class EncodedDataset(Dataset):
-    """ Dataset that splits token ID tensors into input-target sequences for next-token prediction."""
-    def __init__(self, file_path, block_size):
+    """
+    Dataset that builds overlapping sliding-window sequences
+    for next-token prediction.
+    """
+
+    def __init__(self, file_path, block_size, stride=block_size, pad_token_id=3):
         self.block_size = block_size
+        self.stride = stride
 
         if not Path(file_path).exists():
             raise FileNotFoundError(f"Tokenized file not found: {file_path}")
-        
+
         tokens = torch.load(file_path, weights_only=False)
 
-        total_len = (len(tokens) // (block_size + 1)) * (block_size + 1)
-        tokens = tokens[:total_len]
-        self.sequences = tokens.view(-1, block_size + 1)
+        window_size = block_size + 1
+
+        if len(tokens) < window_size:
+            self.sequences = torch.empty(
+                (0, window_size),
+                dtype=tokens.dtype
+            )
+
+        else:
+            # Create sliding windows
+            self.sequences = tokens.unfold(
+                dimension=0,
+                size=window_size,
+                step=self.stride
+            )
 
     def __len__(self):
         return len(self.sequences)
 
     def __getitem__(self, idx):
         seq = self.sequences[idx]
+
         input_ids = seq[:-1].clone().detach()
         target_ids = seq[1:].clone().detach()
 
-        return {"input_ids": input_ids, "target_ids": target_ids}
+        return {
+            "input_ids": input_ids,
+            "target_ids": target_ids
+        }
