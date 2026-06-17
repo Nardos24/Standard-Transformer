@@ -9,9 +9,9 @@ class EncodedDataset(Dataset):
     for next-token prediction.
     """
 
-    def __init__(self, file_path, block_size, stride=block_size, pad_token_id=3):
+    def __init__(self, file_path, block_size, stride=2, pad_token_id=3):
         self.block_size = block_size
-        self.stride = stride
+        self.stride = block_size
 
         if not Path(file_path).exists():
             raise FileNotFoundError(f"Tokenized file not found: {file_path}")
