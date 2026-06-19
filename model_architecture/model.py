@@ -44,7 +44,7 @@ class FeedForward(nn.Module):
         self.config = config
         self.net = nn.Sequential(
             nn.Linear(n_embd, 4 * n_embd),
-            nn.ReLU(),
+            nn.GeLU(),
             nn.Linear(4 * n_embd, n_embd),
             nn.Dropout(config.dropout),
         )
