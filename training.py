@@ -77,7 +77,7 @@ def main():
         n_embd=128,
         n_head = 8,
         n_layer = 4,
-        dropout= 0.1,
+        dropout= 0.0,
         max_epochs = 5,
         max_new_tokens = 200,
         temperature = 0.8
