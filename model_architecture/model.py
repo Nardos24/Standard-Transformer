@@ -73,6 +73,7 @@ class LanguageModel(nn.Module):
         self.config = config
         self.token_embedding_table = nn.Embedding(config.vocab_size, config.n_embd)
         self.position_embedding_table = nn.Embedding(config.block_size, config.n_embd)
+        self.drop = nn.Dropout(config.dropout)
         self.blocks = nn.Sequential(*[Block(config) for _ in range(config.n_layer)])
         self.ln_f = nn.LayerNorm(config.n_embd)
         self.lm_head = nn.Linear(config.n_embd, config.vocab_size)
@@ -81,7 +82,7 @@ class LanguageModel(nn.Module):
         B, T = idx.shape
         tok_emb = self.token_embedding_table(idx)
         pos_emb = self.position_embedding_table(torch.arange(T, device=idx.device))
-        x = tok_emb + pos_emb
+        x = self.drop(tok_emb + pos_emb)
         x = self.blocks(x)
         x = self.ln_f(x)
         logits = self.lm_head(x)
@@ -91,7 +92,7 @@ class LanguageModel(nn.Module):
             B, T, C = logits.shape
             logits_flat = logits.view(B*T, C)
             targets_flat = targets.view(B*T)
-            loss = F.cross_entropy(logits_flat, targets_flat)
+            loss = F.cross_entropy(logits_flat, targets_flat, label_smoothing=self.config.label_smoothing)
         return logits, loss
     
     @torch.no_grad()
