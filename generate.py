@@ -94,10 +94,12 @@ def main():
         n_embd=128,
         n_head = 8,
         n_layer = 4,
-        dropout= 0.0,
+        dropout= 0.2,
         max_epochs = 5,
         max_new_tokens = 200,
-        temperature = 0.8
+        temperature = 0.8,
+        weight_decay = 0.1,
+        label_smoothing = 0.1
     )
     
     # Load model

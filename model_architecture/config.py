@@ -12,4 +12,6 @@ class GPTConfig:
     dropout: float
     max_epochs: int
     max_new_tokens: int
-    temperature: int
+    temperature: float
+    weight_decay: float = 0.1
+    label_smoothing: float = 0.1
